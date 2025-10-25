@@ -103,13 +103,15 @@ public class MapButtonsController extends Fragment
     final FloatingActionButton helpButton = mFrame.findViewById(R.id.help_button);
     if (helpButton != null)
     {
-      if (Config.isNY() && !TextUtils.isEmpty(Utils.getDonateUrl(requireContext())))
-        helpButton.setImageResource(R.drawable.ic_christmas_tree);
-      else
-        helpButton.setImageResource(R.drawable.logo);
-      // Keep this button colorful in normal theme.
-      if (!ThemeUtils.isNightTheme())
-        helpButton.getDrawable().setTintList(null);
+      // Organic Maps branding button disabled - hide it
+      helpButton.setVisibility(View.GONE);
+      // if (Config.isNY() && !TextUtils.isEmpty(Utils.getDonateUrl(requireContext())))
+      //   helpButton.setImageResource(R.drawable.ic_christmas_tree);
+      // else
+      //   helpButton.setImageResource(R.drawable.logo);
+      // // Keep this button colorful in normal theme.
+      // if (!ThemeUtils.isNightTheme())
+      //   helpButton.getDrawable().setTintList(null);
     }
 
     final View zoomFrame = mFrame.findViewById(R.id.zoom_buttons_container);
@@ -151,8 +153,9 @@ public class MapButtonsController extends Fragment
         }
       });
     }
-    if (helpButton != null)
-      helpButton.setOnClickListener((v) -> mMapButtonClickListener.onMapButtonClick(MapButtons.help));
+    // Organic Maps branding button disabled - no click listener needed
+    // if (helpButton != null)
+    //   helpButton.setOnClickListener((v) -> mMapButtonClickListener.onMapButtonClick(MapButtons.help));
 
     mSearchWheel = new SearchWheel(mFrame,
                                    (v)

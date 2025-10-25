@@ -18,7 +18,7 @@
 ## Project Structure
 
 ```
-/Users/owainrowley/AndroidStudioProjects/Maps/
+~/AndroidStudioProjects/Maps/
 ├── android/                    # Android app (YOU ARE HERE)
 │   ├── app/                    # Main Android application module
 │   ├── sdk/                    # SDK module (JNI wrapper for native code)
