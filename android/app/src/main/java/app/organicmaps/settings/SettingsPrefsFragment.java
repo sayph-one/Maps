@@ -117,11 +117,12 @@ public class SettingsPrefsFragment extends BaseXmlSettingsFragment implements La
     final String key = preference.getKey();
     if (key != null)
     {
-      if (key.equals(getString(R.string.pref_osm_profile)))
-      {
-        startActivity(new Intent(requireActivity(), ProfileActivity.class));
-      }
-      else if (key.equals(getString(R.string.pref_tts_screen)))
+      // Editor functionality disabled
+      // if (key.equals(getString(R.string.pref_osm_profile)))
+      // {
+      //   startActivity(new Intent(requireActivity(), ProfileActivity.class));
+      // }
+      if (key.equals(getString(R.string.pref_tts_screen)))
       {
         getSettingsActivity().stackFragment(VoiceInstructionsSettingsFragment.class,
                                             getString(R.string.pref_tts_enable_title), null);

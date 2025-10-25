@@ -465,6 +465,8 @@
         android:parentActivityName="app.organicmaps.bookmarks.BookmarkCategoriesActivity"
         android:windowSoftInputMode="adjustResize" />
 
+    <!-- Editor functionality disabled -->
+    <!--
     <activity
         android:name="app.organicmaps.editor.EditorActivity"
         android:configChanges="orientation|screenLayout|screenSize"
@@ -489,6 +491,7 @@
     <activity
         android:name="app.organicmaps.editor.OsmLoginActivity"
         android:parentActivityName="app.organicmaps.MwmActivity" />
+    -->
 
     <activity
       android:name="app.organicmaps.bookmarks.BookmarkCategorySettingsActivity"

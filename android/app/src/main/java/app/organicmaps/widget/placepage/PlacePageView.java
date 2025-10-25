@@ -708,33 +708,8 @@ public class PlacePageView extends Fragment
     // showTaxiOffer(mapObject);
     refreshMetadataOrHide(Framework.nativeGetActiveObjectFormattedRouteRefs(), mRouteRef, mTvRouteRef);
 
-    if (RoutingController.get().isNavigating() || RoutingController.get().isPlanning())
-    {
-      UiUtils.hide(mEditPlace, mAddOrganisation, mAddPlace, mEditTopSpace);
-    }
-    else
-    {
-      UiUtils.showIf(Editor.nativeShouldShowEditPlace(), mEditPlace);
-      UiUtils.showIf(Editor.nativeShouldShowAddBusiness(), mAddOrganisation);
-      UiUtils.showIf(Editor.nativeShouldShowAddPlace(), mAddPlace);
-      mEditPlace.setEnabled(Editor.nativeCanEditPlace());
-      mAddOrganisation.setEnabled(Editor.nativeCanEditPlace());
-      mAddPlace.setEnabled(Editor.nativeCanEditPlace());
-      TextView mTvEditPlace = mEditPlace.findViewById(R.id.tv__editor);
-      TextView mTvAddBusiness = mAddPlace.findViewById(R.id.tv__editor);
-      TextView mTvAddPlace = mAddPlace.findViewById(R.id.tv__editor);
-      final int editPlaceButtonColor =
-          Editor.nativeCanEditPlace()
-              ? ContextCompat.getColor(getContext(),
-                                       UiUtils.getStyledResourceId(getContext(), androidx.appcompat.R.attr.colorAccent))
-              : getResources().getColor(R.color.button_accent_text_disabled);
-      mTvEditPlace.setTextColor(editPlaceButtonColor);
-      mTvAddBusiness.setTextColor(editPlaceButtonColor);
-      mTvAddPlace.setTextColor(editPlaceButtonColor);
-      UiUtils.showIf(
-          UiUtils.isVisible(mEditPlace) || UiUtils.isVisible(mAddOrganisation) || UiUtils.isVisible(mAddPlace),
-          mEditTopSpace);
-    }
+    // Editor functionality disabled - hide all edit buttons
+    UiUtils.hide(mEditPlace, mAddOrganisation, mAddPlace, mEditTopSpace);
     UiUtils.hideIf(mMapObject.isTrackRecording(), mShareButton, mFrame.findViewById(R.id.ll__place_open_in));
     UiUtils.hideIf(mMapObject.isTrack(), mFrame.findViewById(R.id.ll__place_open_in));
     updateLinksView();
@@ -837,12 +812,13 @@ public class PlacePageView extends Fragment
       // A workaround to make single taps toggle the bottom sheet.
       mPlacePageViewListener.onPlacePageRequestToggleState();
     }
-    else if (id == R.id.ll__place_editor)
-      ((MwmActivity) requireActivity()).showEditor();
-    else if (id == R.id.ll__add_organisation)
-      addOrganisation();
-    else if (id == R.id.ll__place_add)
-      addPlace();
+    // Editor functionality disabled
+    // else if (id == R.id.ll__place_editor)
+    //   ((MwmActivity) requireActivity()).showEditor();
+    // else if (id == R.id.ll__add_organisation)
+    //   addOrganisation();
+    // else if (id == R.id.ll__place_add)
+    //   addPlace();
     else if (id == R.id.ll__place_latlon)
     {
       final int formatIndex = visibleCoordsFormat.indexOf(mCoordsFormat);
