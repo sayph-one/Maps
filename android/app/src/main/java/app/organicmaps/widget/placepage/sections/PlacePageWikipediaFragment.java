@@ -56,8 +56,9 @@ public class PlacePageWikipediaFragment extends Fragment implements Observer<Map
     mWikiArticleView = view.findViewById(R.id.poi_wiki_article);
     View wikiArticleMoreBtn = view.findViewById(R.id.more_btn);
     mWikiArticleViewContainer = view.findViewById(R.id.poi_wiki_article_container);
-    wikiArticleMoreBtn.setOnClickListener(v -> showWikiArticleScreen());
-    mWikiArticleView.setOnClickListener(v -> showWikiArticleScreen());
+    // Wikipedia functionality disabled
+    // wikiArticleMoreBtn.setOnClickListener(v -> showWikiArticleScreen());
+    // mWikiArticleView.setOnClickListener(v -> showWikiArticleScreen());
     mWiki = view.findViewById(R.id.ll__place_wiki);
   }
 
@@ -87,34 +88,9 @@ public class PlacePageWikipediaFragment extends Fragment implements Observer<Map
 
   private void updateViews()
   {
-    // There are two sources of wiki info in OrganicMaps:
-    // wiki links from OpenStreetMaps, and wiki pages explicitly parsed into OrganicMaps.
-    // This part hides the WikiArticleView if the wiki page has not been parsed.
-    if (TextUtils.isEmpty(mMapObject.getWikiArticle()))
-      UiUtils.hide(mWikiArticleViewContainer);
-    else
-    {
-      UiUtils.show(mWikiArticleViewContainer);
-      mWikiArticleView.setText(getShortWikiArticle());
-      final String wikiArticleString = mWikiArticleView.getText().toString();
-      mWikiArticleView.setOnLongClickListener((v) -> {
-        PlacePageUtils.copyToClipboard(requireContext(), mFrame, wikiArticleString);
-        return true;
-      });
-    }
-
-    final String wikipediaLink = mMapObject.getMetadata(Metadata.MetadataType.FMD_WIKIPEDIA);
-    if (TextUtils.isEmpty(wikipediaLink))
-      UiUtils.hide(mWiki);
-    else
-    {
-      UiUtils.show(mWiki);
-      mWiki.setOnClickListener((v) -> Utils.openUrl(requireContext(), wikipediaLink));
-      mWiki.setOnLongClickListener((v) -> {
-        PlacePageUtils.copyToClipboard(requireContext(), mFrame, wikipediaLink);
-        return true;
-      });
-    }
+    // Wikipedia functionality disabled - hide everything
+    UiUtils.hide(mWikiArticleViewContainer);
+    UiUtils.hide(mWiki);
   }
 
   @Override

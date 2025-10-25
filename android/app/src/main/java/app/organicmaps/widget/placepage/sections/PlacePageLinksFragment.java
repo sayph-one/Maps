@@ -180,31 +180,16 @@ public class PlacePageLinksFragment extends Fragment implements Observer<MapObje
 
   private void refreshLinks()
   {
-    refreshMetadataOrHide(mMapObject.getWebsiteUrl(true /* strip */, Metadata.MetadataType.FMD_WEBSITE), mWebsite,
-                          mTvWebsite);
-    refreshMetadataOrHide(mMapObject.getWebsiteUrl(true /* strip */, Metadata.MetadataType.FMD_WEBSITE_MENU),
-                          mWebsiteMenu, mTvWebsiteMenuSubsite);
-
-    String wikimedia_commons = mMapObject.getMetadata(Metadata.MetadataType.FMD_WIKIMEDIA_COMMONS);
-    String wikimedia_commons_text =
-        TextUtils.isEmpty(wikimedia_commons) ? "" : getResources().getString(R.string.wikimedia_commons);
-    refreshMetadataOrHide(wikimedia_commons_text, mWikimedia, mTvWikimedia);
-    refreshMetadataOrHide(mMapObject.getMetadata(Metadata.MetadataType.FMD_EMAIL), mEmail, mTvEmail);
-
-    final String facebook = mMapObject.getMetadata(Metadata.MetadataType.FMD_CONTACT_FACEBOOK);
-    refreshMetadataOrHide(facebook, mFacebookPage, mTvFacebookPage);
-
-    final String instagram = mMapObject.getMetadata(Metadata.MetadataType.FMD_CONTACT_INSTAGRAM);
-    refreshMetadataOrHide(instagram, mInstagramPage, mTvInstagramPage);
-
-    final String twitter = mMapObject.getMetadata(Metadata.MetadataType.FMD_CONTACT_TWITTER);
-    refreshMetadataOrHide(twitter, mTwitterPage, mTvTwitterPage);
-
-    final String vk = mMapObject.getMetadata(Metadata.MetadataType.FMD_CONTACT_VK);
-    refreshMetadataOrHide(vk, mVkPage, mTvVkPage);
-
-    final String line = mMapObject.getMetadata(Metadata.MetadataType.FMD_CONTACT_LINE);
-    refreshMetadataOrHide(line, mLinePage, mTvLinePage);
+    // All external links disabled - hide everything
+    mWebsite.setVisibility(GONE);
+    mWebsiteMenu.setVisibility(GONE);
+    mWikimedia.setVisibility(GONE);
+    mEmail.setVisibility(GONE);
+    mFacebookPage.setVisibility(GONE);
+    mInstagramPage.setVisibility(GONE);
+    mTwitterPage.setVisibility(GONE);
+    mVkPage.setVisibility(GONE);
+    mLinePage.setVisibility(GONE);
   }
 
   @Override

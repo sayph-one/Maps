@@ -283,9 +283,10 @@ public class PlacePageView extends Fragment
     LinearLayout latlon = mFrame.findViewById(R.id.ll__place_latlon);
     latlon.setOnClickListener(this);
     LinearLayout openIn = mFrame.findViewById(R.id.ll__place_open_in);
-    openIn.setOnClickListener(this);
-    openIn.setOnLongClickListener(this);
-    openIn.setVisibility(VISIBLE);
+    // "Open in another app" functionality disabled
+    // openIn.setOnClickListener(this);
+    // openIn.setOnLongClickListener(this);
+    openIn.setVisibility(GONE);
     mTvLatlon = mFrame.findViewById(R.id.tv__place_latlon);
     mWifi = mFrame.findViewById(R.id.ll__place_wifi);
     mTvWiFi = mFrame.findViewById(R.id.tv__place_wifi);
@@ -710,8 +711,8 @@ public class PlacePageView extends Fragment
 
     // Editor functionality disabled - hide all edit buttons
     UiUtils.hide(mEditPlace, mAddOrganisation, mAddPlace, mEditTopSpace);
-    UiUtils.hideIf(mMapObject.isTrackRecording(), mShareButton, mFrame.findViewById(R.id.ll__place_open_in));
-    UiUtils.hideIf(mMapObject.isTrack(), mFrame.findViewById(R.id.ll__place_open_in));
+    // "Open in another app" is always hidden (disabled)
+    UiUtils.hideIf(mMapObject.isTrackRecording(), mShareButton);
     updateLinksView();
     updateOpeningHoursView();
     updateProductsView();
@@ -826,12 +827,13 @@ public class PlacePageView extends Fragment
       MwmApplication.prefs(context).edit().putInt(PREF_COORDINATES_FORMAT, mCoordsFormat.getId()).apply();
       refreshLatLon();
     }
-    else if (id == R.id.ll__place_open_in)
-    {
-      final String uri = Framework.nativeGetGeoUri(mMapObject.getLat(), mMapObject.getLon(), mMapObject.getScale(),
-                                                   mMapObject.getName());
-      Utils.openUri(requireContext(), Uri.parse(uri), R.string.uri_open_location_failed);
-    }
+    // "Open in another app" functionality disabled
+    // else if (id == R.id.ll__place_open_in)
+    // {
+    //   final String uri = Framework.nativeGetGeoUri(mMapObject.getLat(), mMapObject.getLon(), mMapObject.getScale(),
+    //                                                mMapObject.getName());
+    //   Utils.openUri(requireContext(), Uri.parse(uri), R.string.uri_open_location_failed);
+    // }
     else if (id == R.id.direction_frame)
       showBigDirection();
     else if (id == R.id.item_icon)
@@ -875,12 +877,13 @@ public class PlacePageView extends Fragment
           items.add(formatted);
       }
     }
-    else if (id == R.id.ll__place_open_in)
-    {
-      final String uri = Framework.nativeGetGeoUri(mMapObject.getLat(), mMapObject.getLon(), mMapObject.getScale(),
-                                                   mMapObject.getName());
-      PlacePageUtils.copyToClipboard(requireContext(), mFrame, uri);
-    }
+    // "Open in another app" functionality disabled
+    // else if (id == R.id.ll__place_open_in)
+    // {
+    //   final String uri = Framework.nativeGetGeoUri(mMapObject.getLat(), mMapObject.getLon(), mMapObject.getScale(),
+    //                                                mMapObject.getName());
+    //   PlacePageUtils.copyToClipboard(requireContext(), mFrame, uri);
+    // }
     else if (id == R.id.ll__place_operator)
       items.add(mTvOperator.getText().toString());
     else if (id == R.id.ll__place_network)

@@ -67,8 +67,9 @@ public class PlacePhoneAdapter extends RecyclerView.Adapter<PlacePhoneAdapter.Vi
       super(itemView);
       mPhone = itemView.findViewById(R.id.tv__place_phone);
       itemView.setVisibility(View.VISIBLE);
-      itemView.setOnClickListener(this);
-      itemView.setOnLongClickListener(this);
+      // Phone calling functionality disabled
+      // itemView.setOnClickListener(this);
+      // itemView.setOnLongClickListener(this);
     }
 
     public void setPhone(String phoneNumber)
@@ -79,22 +80,24 @@ public class PlacePhoneAdapter extends RecyclerView.Adapter<PlacePhoneAdapter.Vi
     @Override
     public void onClick(View view)
     {
-      Utils.callPhone(view.getContext(), mPhone.getText().toString());
+      // Phone calling functionality disabled
+      // Utils.callPhone(view.getContext(), mPhone.getText().toString());
     }
 
     @Override
     public boolean onLongClick(View view)
     {
-      final String phoneNumber = mPhone.getText().toString();
-      final Context ctx = view.getContext();
-      Utils.copyTextToClipboard(ctx, phoneNumber);
-
-      KeyguardManager keyguardManager = (KeyguardManager) ctx.getSystemService(Context.KEYGUARD_SERVICE);
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || keyguardManager.isDeviceLocked())
-      {
-        Utils.showSnackbarAbove(view.getRootView().findViewById(R.id.pp_buttons_layout), view,
-                                ctx.getString(R.string.copied_to_clipboard, phoneNumber));
-      }
+      // Phone copying functionality disabled
+      // final String phoneNumber = mPhone.getText().toString();
+      // final Context ctx = view.getContext();
+      // Utils.copyTextToClipboard(ctx, phoneNumber);
+      //
+      // KeyguardManager keyguardManager = (KeyguardManager) ctx.getSystemService(Context.KEYGUARD_SERVICE);
+      // if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || keyguardManager.isDeviceLocked())
+      // {
+      //   Utils.showSnackbarAbove(view.getRootView().findViewById(R.id.pp_buttons_layout), view,
+      //                           ctx.getString(R.string.copied_to_clipboard, phoneNumber));
+      // }
       return true;
     }
   }
