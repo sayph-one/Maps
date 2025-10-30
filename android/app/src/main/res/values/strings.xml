@@ -596,6 +596,12 @@
     <string name="wifi_only_downloads">Download maps on WiFi only</string>
     <string name="wifi_only_downloads_description">Restrict map downloads to WiFi connections to avoid mobile data charges</string>
     <string name="wifi_only_downloads_warning">Map downloads are restricted to WiFi connections. To download over mobile data, disable \"Download maps on WiFi only\" in Settings.</string>
+    <string name="please_connect_wifi">Please connect to WiFi to download maps</string>
+    <string name="setting_up_maps">Setting up maps</string>
+    <string name="downloading_world_map">Downloading world overview map</string>
+    <string name="downloading_local_map">Downloading local map</string>
+    <string name="connect_to_wifi_title">Connect to WiFi</string>
+    <string name="connect_to_wifi_message">Maps will download automatically when you connect to WiFi</string>
     <string name="traffic_update_maps_text">To display traffic data, maps must be updated.</string>
     <string name="big_font">Increase size for map labels</string>
     <string name="traffic_update_app">Please update Organic Maps</string>

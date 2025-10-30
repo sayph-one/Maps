@@ -15,12 +15,16 @@ import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
+import androidx.core.content.ContextCompat;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.CallSuper;
@@ -52,9 +56,9 @@ public class DownloadResourcesLegacyActivity extends BaseMwmFragmentActivity
   private static final String TAG = DownloadResourcesLegacyActivity.class.getSimpleName();
 
   private TextView mTvMessage;
+  private TextView mTvHeadMessage;
+  private ImageView mDownloadIcon;
   private LinearProgressIndicator mProgress;
-  private Button mBtnDownload;
-  private CheckBox mChbDownloadCountry;
 
   private String mCurrentCountry;
 
@@ -66,17 +70,9 @@ public class DownloadResourcesLegacyActivity extends BaseMwmFragmentActivity
 
   private boolean mAreResourcesDownloaded;
 
-  private static final int DOWNLOAD = 0;
-  private static final int PAUSE = 1;
-  private static final int RESUME = 2;
-  private static final int TRY_AGAIN = 3;
-  private static final int PROCEED_TO_MAP = 4;
-  private static final int BTN_COUNT = 5;
-
-  private View.OnClickListener[] mBtnListeners;
-  private String[] mBtnNames;
-
   private int mCountryDownloadListenerSlot;
+
+  private ConnectivityManager.NetworkCallback mNetworkCallback;
 
   private final LocationListener mLocationListener = new LocationListener() {
     @Override
@@ -94,21 +90,7 @@ public class DownloadResourcesLegacyActivity extends BaseMwmFragmentActivity
         return;
       }
 
-      int status = MapManager.nativeGetStatus(mCurrentCountry);
-      String name = MapManager.nativeGetName(mCurrentCountry);
-
-      if (status != CountryItem.STATUS_DONE)
-      {
-        UiUtils.show(mChbDownloadCountry);
-        String checkBoxText;
-        if (status == CountryItem.STATUS_UPDATABLE)
-          checkBoxText = String.format(getString(R.string.update_country_ask), name);
-        else
-          checkBoxText = String.format(getString(R.string.download_country_ask), name);
-
-        mChbDownloadCountry.setText(checkBoxText);
-      }
-
+      // Location detected - will automatically download local map after world map completes
       MwmApplication.from(DownloadResourcesLegacyActivity.this).getLocationHelper().removeListener(this);
     }
   };
@@ -188,7 +170,24 @@ public class DownloadResourcesLegacyActivity extends BaseMwmFragmentActivity
     {
       Utils.keepScreenOn(true, getWindow());
 
-      setAction(DOWNLOAD);
+      // Auto-start download if on WiFi, otherwise show "connect to WiFi" message
+      if (canDownload())
+      {
+        // WiFi available - show downloading UI with globe icon (world map)
+        mDownloadIcon.setImageResource(R.drawable.ic_globe);
+        mDownloadIcon.setColorFilter(ContextCompat.getColor(this, R.color.base_red));
+        mTvHeadMessage.setText(R.string.downloading_world_map);
+        mTvMessage.setText(""); // Clear subtitle during download
+        doDownload();
+      }
+      else
+      {
+        // No WiFi - show connect to WiFi UI
+        mDownloadIcon.setImageResource(R.drawable.ic_wifi_off);
+        mDownloadIcon.setColorFilter(ContextCompat.getColor(this, R.color.base_red));
+        mTvHeadMessage.setText(R.string.connect_to_wifi_title);
+        mTvMessage.setText(R.string.connect_to_wifi_message);
+      }
 
       return;
     }
@@ -218,6 +217,53 @@ public class DownloadResourcesLegacyActivity extends BaseMwmFragmentActivity
     super.onResume();
     if (!isFinishing())
       MwmApplication.from(this).getLocationHelper().addListener(mLocationListener);
+
+    // Auto-start download if we're waiting and WiFi is now available
+    if (!mAreResourcesDownloaded && canDownload())
+    {
+      // WiFi now available - update UI and start download with globe icon
+      mDownloadIcon.setImageResource(R.drawable.ic_globe);
+      mDownloadIcon.setColorFilter(ContextCompat.getColor(this, R.color.base_red));
+      mTvHeadMessage.setText(R.string.downloading_world_map);
+      mTvMessage.setText(""); // Clear subtitle during download
+      doDownload();
+    }
+
+    // Register network callback to detect when WiFi becomes available
+    if (!mAreResourcesDownloaded && mNetworkCallback == null)
+    {
+      final ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+      if (connectivityManager != null)
+      {
+        mNetworkCallback = new ConnectivityManager.NetworkCallback() {
+          @Override
+          public void onAvailable(@NonNull Network network)
+          {
+            // Check if this is a WiFi connection
+            final NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+            if (capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI))
+            {
+              // WiFi is now available - update UI and start download on main thread
+              runOnUiThread(() -> {
+                if (!mAreResourcesDownloaded && !isFinishing())
+                {
+                  mDownloadIcon.setImageResource(R.drawable.ic_globe);
+                  mDownloadIcon.setColorFilter(ContextCompat.getColor(DownloadResourcesLegacyActivity.this, R.color.base_red));
+                  mTvHeadMessage.setText(R.string.downloading_world_map);
+                  mTvMessage.setText(""); // Clear subtitle during download
+                  doDownload();
+                }
+              });
+            }
+          }
+        };
+
+        final NetworkRequest request = new NetworkRequest.Builder()
+            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            .build();
+        connectivityManager.registerNetworkCallback(request, mNetworkCallback);
+      }
+    }
   }
 
   @Override
@@ -228,11 +274,35 @@ public class DownloadResourcesLegacyActivity extends BaseMwmFragmentActivity
     if (mAlertDialog != null && mAlertDialog.isShowing())
       mAlertDialog.dismiss();
     mAlertDialog = null;
+
+    // Unregister network callback to avoid leaks
+    if (mNetworkCallback != null)
+    {
+      final ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+      if (connectivityManager != null)
+      {
+        connectivityManager.unregisterNetworkCallback(mNetworkCallback);
+      }
+      mNetworkCallback = null;
+    }
   }
 
   private void setDownloadMessage(int bytesToDownload)
   {
     mTvMessage.setText(getString(R.string.download_resources, StringUtils.getFileSizeString(this, bytesToDownload)));
+  }
+
+  /**
+   * Check if download can proceed based on WiFi-only setting and connection status
+   */
+  private boolean canDownload()
+  {
+    // If WiFi-only is disabled, allow download on any connection
+    if (!Config.isWifiOnlyDownloadsEnabled())
+      return true;
+
+    // If WiFi-only is enabled, only allow download on WiFi
+    return ConnectionState.INSTANCE.isWifiConnected();
   }
 
   private boolean prepareFilesDownload(boolean showMap)
@@ -263,105 +333,15 @@ public class DownloadResourcesLegacyActivity extends BaseMwmFragmentActivity
   private void initViewsAndListeners()
   {
     mTvMessage = findViewById(R.id.download_message);
+    mTvHeadMessage = findViewById(R.id.head_message);
+    mDownloadIcon = findViewById(R.id.download_icon);
     mProgress = findViewById(R.id.progressbar);
-    mBtnDownload = findViewById(R.id.btn_download_resources);
-    mChbDownloadCountry = findViewById(R.id.chb_download_country);
-
-    mBtnListeners = new View.OnClickListener[BTN_COUNT];
-    mBtnNames = new String[BTN_COUNT];
-
-    mBtnListeners[DOWNLOAD] = v -> onDownloadClicked();
-    mBtnNames[DOWNLOAD] = getString(R.string.download);
-
-    mBtnListeners[PAUSE] = v -> onPauseClicked();
-    mBtnNames[PAUSE] = getString(R.string.pause);
-
-    mBtnListeners[RESUME] = v -> onResumeClicked();
-    mBtnNames[RESUME] = getString(R.string.continue_button);
-
-    mBtnListeners[TRY_AGAIN] = v -> onTryAgainClicked();
-    mBtnNames[TRY_AGAIN] = getString(R.string.try_again);
-
-    mBtnListeners[PROCEED_TO_MAP] = v -> onProceedToMapClicked();
-    mBtnNames[PROCEED_TO_MAP] = getString(R.string.download_resources_continue);
-  }
-
-  private void setAction(int action)
-  {
-    mBtnDownload.setOnClickListener(mBtnListeners[action]);
-    mBtnDownload.setText(mBtnNames[action]);
   }
 
   private void doDownload()
   {
     if (nativeStartNextFileDownload(mResourcesDownloadListener) == ERR_NO_MORE_FILES)
       finishFilesDownload(ERR_NO_MORE_FILES);
-  }
-
-  private void onDownloadClicked()
-  {
-    // Check WiFi-only setting before starting download
-    if (Config.isWifiOnlyDownloadsEnabled() && !ConnectionState.INSTANCE.isWifiConnected())
-    {
-      new MaterialAlertDialogBuilder(this, R.style.MwmTheme_AlertDialog)
-          .setTitle(R.string.download_over_mobile_header)
-          .setMessage(R.string.wifi_only_downloads_warning)
-          .setPositiveButton(R.string.ok, null)
-          .show();
-      return;
-    }
-
-    setAction(PAUSE);
-    doDownload();
-  }
-
-  private void onPauseClicked()
-  {
-    setAction(RESUME);
-    nativeCancelCurrentFile();
-  }
-
-  private void onResumeClicked()
-  {
-    // Check WiFi-only setting before resuming download
-    if (Config.isWifiOnlyDownloadsEnabled() && !ConnectionState.INSTANCE.isWifiConnected())
-    {
-      new MaterialAlertDialogBuilder(this, R.style.MwmTheme_AlertDialog)
-          .setTitle(R.string.download_over_mobile_header)
-          .setMessage(R.string.wifi_only_downloads_warning)
-          .setPositiveButton(R.string.ok, null)
-          .show();
-      return;
-    }
-
-    setAction(PAUSE);
-    doDownload();
-  }
-
-  private void onTryAgainClicked()
-  {
-    if (prepareFilesDownload(true))
-    {
-      // Check WiFi-only setting before retrying download
-      if (Config.isWifiOnlyDownloadsEnabled() && !ConnectionState.INSTANCE.isWifiConnected())
-      {
-        new MaterialAlertDialogBuilder(this, R.style.MwmTheme_AlertDialog)
-            .setTitle(R.string.download_over_mobile_header)
-            .setMessage(R.string.wifi_only_downloads_warning)
-            .setPositiveButton(R.string.ok, null)
-            .show();
-        return;
-      }
-
-      setAction(PAUSE);
-      doDownload();
-    }
-  }
-
-  private void onProceedToMapClicked()
-  {
-    mAreResourcesDownloaded = true;
-    showMap();
   }
 
   public void showMap()
@@ -396,19 +376,22 @@ public class DownloadResourcesLegacyActivity extends BaseMwmFragmentActivity
       // World and WorldCoasts has been downloaded, we should register maps again to correctly add them to the model.
       Framework.nativeReloadWorldMaps();
 
-      if (mCurrentCountry != null && mChbDownloadCountry.isChecked())
+      // Automatically download the local country map if detected
+      if (mCurrentCountry != null)
       {
+        // Switch icon to map_search for local map download
+        mDownloadIcon.setImageResource(R.drawable.ic_map_search);
+        mDownloadIcon.setColorFilter(ContextCompat.getColor(this, R.color.base_red));
+        mTvHeadMessage.setText(R.string.downloading_local_map);
+
         CountryItem item = CountryItem.fill(mCurrentCountry);
-        UiUtils.hide(mChbDownloadCountry);
-        mTvMessage.setText(getString(R.string.downloading_country_can_proceed, item.name));
+        mTvMessage.setText(item.name);
         mProgress.setMax((int) item.totalSize);
         mProgress.setProgressCompat(0, true);
 
         mCountryDownloadListenerSlot = MapManager.nativeSubscribe(mCountryDownloadListener);
         // Use warn3gAndDownload to check WiFi-only setting
-        final boolean dialogShown = MapManagerHelper.warn3gAndDownload(this, mCurrentCountry, null);
-        if (!dialogShown)
-          setAction(PROCEED_TO_MAP);
+        MapManagerHelper.warn3gAndDownload(this, mCurrentCountry, null);
       }
       else
       {
@@ -460,12 +443,7 @@ public class DownloadResourcesLegacyActivity extends BaseMwmFragmentActivity
                        .setTitle(titleId)
                        .setMessage(messageId)
                        .setCancelable(true)
-                       .setOnCancelListener((dialog) -> setAction(PAUSE))
-                       .setPositiveButton(R.string.try_again,
-                                          (dialog, which) -> {
-                                            setAction(TRY_AGAIN);
-                                            onTryAgainClicked();
-                                          })
+                       .setPositiveButton(R.string.ok, null)
                        .setOnDismissListener(dialog -> mAlertDialog = null)
                        .show();
   }
