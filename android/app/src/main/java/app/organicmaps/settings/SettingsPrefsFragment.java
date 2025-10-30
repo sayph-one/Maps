@@ -61,6 +61,7 @@ public class SettingsPrefsFragment extends BaseXmlSettingsFragment implements La
     initLoggingEnabledPrefsCallbacks();
     initEmulationBadStorage();
     initUseMobileDataPrefsCallbacks();
+    initWifiOnlyDownloadsPrefsCallbacks();
     initPowerManagementPrefsCallbacks();
     initBookmarksTextPlacementPrefsCallbacks();
     initPlayServicesPrefsCallbacks();
@@ -183,6 +184,17 @@ public class SettingsPrefsFragment extends BaseXmlSettingsFragment implements La
       final String valueStr = (String) newValue;
       NetworkPolicy.Type type = NetworkPolicy.Type.valueOf(valueStr);
       Config.setUseMobileDataSettings(type);
+      return true;
+    });
+  }
+
+  private void initWifiOnlyDownloadsPrefsCallbacks()
+  {
+    final Preference pref = getPreference(getString(R.string.pref_wifi_only_downloads));
+
+    ((TwoStatePreference) pref).setChecked(Config.isWifiOnlyDownloadsEnabled());
+    pref.setOnPreferenceChangeListener((preference, newValue) -> {
+      Config.setWifiOnlyDownloadsEnabled((boolean) newValue);
       return true;
     });
   }

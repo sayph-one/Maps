@@ -593,6 +593,9 @@
     <string name="mobile_data_description">Mobile internet is required for map update notifications and uploading edits.</string>
     <string name="mobile_data_option_never">Never Use</string>
     <string name="mobile_data_option_ask">Always Ask</string>
+    <string name="wifi_only_downloads">Download maps on WiFi only</string>
+    <string name="wifi_only_downloads_description">Restrict map downloads to WiFi connections to avoid mobile data charges</string>
+    <string name="wifi_only_downloads_warning">Map downloads are restricted to WiFi connections. To download over mobile data, disable \"Download maps on WiFi only\" in Settings.</string>
     <string name="traffic_update_maps_text">To display traffic data, maps must be updated.</string>
     <string name="big_font">Increase size for map labels</string>
     <string name="traffic_update_app">Please update Organic Maps</string>

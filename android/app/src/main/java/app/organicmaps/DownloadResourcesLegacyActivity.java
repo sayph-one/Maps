@@ -300,6 +300,17 @@ public class DownloadResourcesLegacyActivity extends BaseMwmFragmentActivity
 
   private void onDownloadClicked()
   {
+    // Check WiFi-only setting before starting download
+    if (Config.isWifiOnlyDownloadsEnabled() && !ConnectionState.INSTANCE.isWifiConnected())
+    {
+      new MaterialAlertDialogBuilder(this, R.style.MwmTheme_AlertDialog)
+          .setTitle(R.string.download_over_mobile_header)
+          .setMessage(R.string.wifi_only_downloads_warning)
+          .setPositiveButton(R.string.ok, null)
+          .show();
+      return;
+    }
+
     setAction(PAUSE);
     doDownload();
   }
@@ -312,6 +323,17 @@ public class DownloadResourcesLegacyActivity extends BaseMwmFragmentActivity
 
   private void onResumeClicked()
   {
+    // Check WiFi-only setting before resuming download
+    if (Config.isWifiOnlyDownloadsEnabled() && !ConnectionState.INSTANCE.isWifiConnected())
+    {
+      new MaterialAlertDialogBuilder(this, R.style.MwmTheme_AlertDialog)
+          .setTitle(R.string.download_over_mobile_header)
+          .setMessage(R.string.wifi_only_downloads_warning)
+          .setPositiveButton(R.string.ok, null)
+          .show();
+      return;
+    }
+
     setAction(PAUSE);
     doDownload();
   }
@@ -320,6 +342,17 @@ public class DownloadResourcesLegacyActivity extends BaseMwmFragmentActivity
   {
     if (prepareFilesDownload(true))
     {
+      // Check WiFi-only setting before retrying download
+      if (Config.isWifiOnlyDownloadsEnabled() && !ConnectionState.INSTANCE.isWifiConnected())
+      {
+        new MaterialAlertDialogBuilder(this, R.style.MwmTheme_AlertDialog)
+            .setTitle(R.string.download_over_mobile_header)
+            .setMessage(R.string.wifi_only_downloads_warning)
+            .setPositiveButton(R.string.ok, null)
+            .show();
+        return;
+      }
+
       setAction(PAUSE);
       doDownload();
     }
@@ -372,8 +405,10 @@ public class DownloadResourcesLegacyActivity extends BaseMwmFragmentActivity
         mProgress.setProgressCompat(0, true);
 
         mCountryDownloadListenerSlot = MapManager.nativeSubscribe(mCountryDownloadListener);
-        MapManagerHelper.startDownload(mCurrentCountry);
-        setAction(PROCEED_TO_MAP);
+        // Use warn3gAndDownload to check WiFi-only setting
+        final boolean dialogShown = MapManagerHelper.warn3gAndDownload(this, mCurrentCountry, null);
+        if (!dialogShown)
+          setAction(PROCEED_TO_MAP);
       }
       else
       {

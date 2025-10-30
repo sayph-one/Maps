@@ -43,6 +43,7 @@ public final class Config
   private static final String KEY_MISC_USE_MOBILE_DATA = "UseMobileData";
   private static final String KEY_MISC_USE_MOBILE_DATA_TIMESTAMP = "UseMobileDataTimestamp";
   private static final String KEY_MISC_USE_MOBILE_DATA_ROAMING = "UseMobileDataRoaming";
+  private static final String KEY_WIFI_ONLY_DOWNLOADS = "WifiOnlyDownloads";
   private static final String KEY_MISC_KEEP_SCREEN_ON = "KeepScreenOn";
 
   private static final String KEY_MISC_SHOW_ON_LOCK_SCREEN = "ShowOnLockScreen";
@@ -380,6 +381,16 @@ public final class Config
   static boolean getMobileDataRoaming()
   {
     return getBool(KEY_MISC_USE_MOBILE_DATA_ROAMING, false);
+  }
+
+  public static boolean isWifiOnlyDownloadsEnabled()
+  {
+    return getBool(KEY_WIFI_ONLY_DOWNLOADS, true);
+  }
+
+  public static void setWifiOnlyDownloadsEnabled(boolean enabled)
+  {
+    setBool(KEY_WIFI_ONLY_DOWNLOADS, enabled);
   }
 
   public static void setAgpsTimestamp(long timestamp)

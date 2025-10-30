@@ -11,6 +11,7 @@ import app.organicmaps.R;
 import app.organicmaps.sdk.downloader.CountryItem;
 import app.organicmaps.sdk.downloader.ExpandRetryConfirmationListener;
 import app.organicmaps.sdk.downloader.MapManager;
+import app.organicmaps.sdk.util.Config;
 import app.organicmaps.sdk.util.ConnectionState;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.lang.ref.WeakReference;
@@ -117,6 +118,17 @@ public class MapManagerHelper
 
   private static boolean warnOn3gInternal(Activity activity, @NonNull final Runnable onAcceptListener)
   {
+    // Check WiFi-only downloads setting first
+    if (Config.isWifiOnlyDownloadsEnabled() && !ConnectionState.INSTANCE.isWifiConnected())
+    {
+      new MaterialAlertDialogBuilder(activity, R.style.MwmTheme_AlertDialog)
+          .setTitle(R.string.download_over_mobile_header)
+          .setMessage(R.string.wifi_only_downloads_warning)
+          .setPositiveButton(R.string.ok, null)
+          .show();
+      return true;
+    }
+
     if (MapManager.nativeIsDownloadOn3gEnabled() || !ConnectionState.INSTANCE.isMobileConnected())
     {
       onAcceptListener.run();
