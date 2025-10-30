@@ -218,11 +218,11 @@ public final class Config
 
   public static boolean isShowOnLockScreenEnabled()
   {
-    // Disabled by default on Android 7.1 and earlier devices.
+    // Disabled by default to prevent unwanted lock screen takeover.
     // See links below for details:
     // https://github.com/organicmaps/organicmaps/issues/2857
     // https://github.com/organicmaps/organicmaps/issues/3967
-    final boolean defaultValue = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+    final boolean defaultValue = false;
     return getBool(KEY_MISC_SHOW_ON_LOCK_SCREEN, defaultValue);
   }
 
