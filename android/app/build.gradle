@@ -60,7 +60,7 @@ def getCommitMessage() {
 }
 
 project.ext.appId = 'app.organicmaps'
-project.ext.appName = 'Organic Maps'
+project.ext.appName = 'Maps'
 
 android {
   namespace = 'app.organicmaps'
@@ -174,7 +174,7 @@ android {
       applicationIdSuffix '.debug'   // Allows to install debug and release builds together
       versionNameSuffix '-debug'
       signingConfig = signingConfigs.debug
-      resValue 'string', 'app_name', 'Debug Organic Maps'
+      resValue 'string', 'app_name', 'Debug Maps'
 
       if (googleFirebaseServicesEnabled) {
         firebaseCrashlytics {
@@ -209,7 +209,7 @@ android {
       // To learn more, go to the documentation section about R8 configuration files.
       proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
       matchingFallbacks = ['debug', 'release']
-      resValue 'string', 'app_name', 'Beta Organic Maps'
+      resValue 'string', 'app_name', 'Beta Maps'
 
       if (googleFirebaseServicesEnabled) {
         firebaseCrashlytics {

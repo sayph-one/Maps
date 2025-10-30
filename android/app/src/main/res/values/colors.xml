@@ -15,8 +15,8 @@
   <color name="base_red">#FFF54137</color>
   <color name="dark_red">#F51E30</color>
   <color name="base_yellow">#FFFFC30A</color>
-  <color name="base_green">#FF558B2F</color>
-  <color name="light_green">#2D8953</color>
+  <color name="base_green">#FF132d4d</color>
+  <color name="light_green">#132d4d</color>
   <color name="driving_options_bg_black">#25282B</color>
 
   <color name="black_primary">#DE000000</color>   <!-- 87% black -->
@@ -49,29 +49,29 @@
   <color name="white_60">#99FFFFFF</color> <!-- 60% white -->
   <color name="dark_gray">#8B000000</color>
   <color name="light_gray">#F5F5F5</color>
-  <color name="extended_green">#3C8C3C</color>
+  <color name="extended_green">#132d4d</color>
 
   <color name="icon_tint">#FF757575</color>
 
   <color name="icon_tint_light">#FFBDBDBD</color>
 
   <color name="divider">#1E000000</color>
-  
-  <color name="logo">#006C35</color>
+
+  <color name="logo">#132d4d</color>
 
   <!-- Backgrounds -->
   <color name="bg_window">#FFEEEEEE</color>
-  <color name="bg_primary">#006C35</color>
+  <color name="bg_primary">#132d4d</color>
   <color name="bg_cards">@android:color/white</color>
   <color name="bg_panel">@color/bg_window</color>
-  <color name="bg_primary_dark">#197841</color>
+  <color name="bg_primary_dark">#0f2439</color>
 
   <color name="bg_dialog_translucent">#BB000000</color>
   <color name="bg_text_translucent">#99FFFFFF</color>
 
   <color name="bg_menu">#CCFFFFFF</color>
 
-  <color name="bg_statusbar">#004120</color>
+  <color name="bg_statusbar">#0a1a2e</color>
   <color name="bg_statusbar_translucent">#66000000</color>
 
   <!-- Buttons -->
